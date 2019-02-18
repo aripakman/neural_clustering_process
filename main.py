@@ -104,15 +104,9 @@ def main(args):
                 fname = 'saved_models/'+ end_name + '/'+ end_name +'_' + str(it) + '.pt'            
                 torch.save(dpmm,fname)
     
-    
-    
-                #with open('losses2D_rb.pkl', 'wb') as f:
-                #    pickle.dump([losses,accs,perm_vars], f)
                 
             if it in learning_rates:            
                 optimizer = torch.optim.Adam( dpmm.parameters() , lr=learning_rates[it], weight_decay = weight_decay)
-                
-    
     
     
             data, cs, clusters, K = data_generator.generate(None, batch_size)    
@@ -137,14 +131,14 @@ def main(args):
                         cs = cs[arr]
                         data= data[:,arr,:]    
             
-                        cs = relabel(cs)    # cluster labels should appear in cs[] in increasing order
+                        cs = relabel(cs)    # this makes cluster labels appear in cs[] in increasing order
                                 
             
                         this_loss=0
                         dpmm.previous_n=0            
                         
                         for n in range(1,N):                
-                        # n-1 points are already assigned, the point n-th is to be assigned
+                        # points up to (n-1) are already assigned, the point n is to be assigned
                         
                             logprobs  = dpmm(data,cs,n)                
                             c = cs[n] 
