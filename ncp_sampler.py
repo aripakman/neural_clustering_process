@@ -38,7 +38,7 @@ class NCP_Sampler():
         
     def sample(self, S):
 
-        #inpur S: number of samples
+        #input S: number of samples
              
         assert type(S)==int
         cs = torch.zeros([S,self.N], dtype=torch.int64)
