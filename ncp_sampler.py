@@ -8,39 +8,41 @@ from torch.distributions import Categorical
 class NCP_Sampler():
     
     
-    def __init__(self, dpmm, data):
+    def __init__(self, model, data):
         
 
-        self.h_dim = dpmm.params['h_dim']
-        self.g_dim = dpmm.params['g_dim']
-        self.device = dpmm.params['device']
+        self.model = model
+        self.h_dim = model.params['h_dim']
+        self.g_dim = model.params['g_dim']
+        self.device = model.params['device']
         
         assert data.shape[0] == 1              
         self.N = data.shape[1]
         
         
-        if dpmm.params['model'] == 'Gauss2D':
+        if model.params['model'] == 'Gauss2D':
             data = torch.tensor(data).float().to(self.device)
-            assert data.shape[2] == dpmm.params['x_dim']
-            data = data.view([self.N, dpmm.params['x_dim']])
+            assert data.shape[2] == model.params['x_dim']
+            data = data.view([self.N, model.params['x_dim']])
             
-        elif dpmm.params['model'] == 'MNIST':
+        elif model.params['model'] == 'MNIST':
             data = data.clone().detach().to(self.device)
             data = data.view([self.N, 28,28])
         
-        self.hs = dpmm.h(data)            
+        self.hs = model.h(data)            
         self.qs = self.hs
 
         
-        self.f = dpmm.f
-        self.g = dpmm.g
+        self.f = model.f
+        self.g = model.g
         
         
     def sample(self, S):
 
         #input S: number of samples
-             
+                 
         assert type(S)==int
+        self.model.eval()
         cs = torch.zeros([S,self.N], dtype=torch.int64)
         previous_maxK = 1 
         nll = torch.zeros(S)

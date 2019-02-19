@@ -45,7 +45,7 @@ def main(args):
     batch_size = args.batch_size
     max_it = args.iterations
     
-    dpmm = dpmm.train()
+    
 
     if params['model'] == 'Gauss2D':
         if not os.path.isdir('saved_models/Gauss2D'):
@@ -72,14 +72,14 @@ def main(args):
     t_start = time.time()
     itt = it
     while True:
-            
-    
+                
             it += 1
     
             if it == max_it:
                 break
             
-            
+            dpmm.train()
+                        
             if it % args.plot_interval == 0:
                 
                 torch.cuda.empty_cache()                
