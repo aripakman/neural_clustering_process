@@ -1,8 +1,10 @@
 # Neural Clustering Process
 Implementation of the Neural Clustering Process (NCP) algorithm.
 Based on the papers:
-- Pakman, A. and Paninski, L., [Amortized Bayesian Inference for Clustering Models](https://arxiv.org/abs/1811.09747), BNP@NeurIPS 2018 Workshop
-- Pakman, A. and Paninski, L., [Discrete Neural Processes](https://arxiv.org/abs/1901.00409), arXiv:1901.00409
+
+- Ari Pakman and Liam Paninski, , [Amortized Bayesian Inference for Clustering Models](https://arxiv.org/abs/1811.09747), BNP@NeurIPS 2018 Workshop
+
+- Ari Pakman, Yueqi Wang, Catalin Mitelut, JinHyung Lee and Liam Paninski, [Discrete Neural Processes](https://arxiv.org/abs/1901.00409), arXiv:1901.00409
 
 ```bash
 pip3 install -r requirements.txt
