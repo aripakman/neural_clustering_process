@@ -17,3 +17,12 @@ The code contains two implementations of the NCP algorithm, which differ in the 
 
 
 
+
+<p align="center"> 
+<img src="assets/fig1.pdf">
+</p>
+
+<p align="center"> 
+Given the observations in the leftmost panel, we show samples from the posterior of a Dirichlet Process Mixture Model of 2D Gaussians, 
+indicating in each case the number of clusters and posterior probability. 
+</p>
