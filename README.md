@@ -19,7 +19,7 @@ The code contains two implementations of the NCP algorithm, which differ in the 
 
 
 <p align="center"> 
-<img src="assets/fig1.pdf">
+<img src="assets/fig1.png">
 </p>
 
 <p align="center"> 
