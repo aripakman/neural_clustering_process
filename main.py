@@ -22,6 +22,8 @@ def main(args):
     model = args.model
     params = get_parameters(model)
     params['device'] = torch.device("cuda:0" if args.cuda else "cpu")
+    
+    print(params['device'])
 
     
     dpmm = NeuralClustering(params).to(params['device'])
@@ -127,14 +129,14 @@ def main(args):
                     
                     for perm in range(perms):
                         arr = np.arange(N)
-                        np.random.shuffle(arr)
+                        np.random.shuffle(arr)   # permute the order in which the points are queried
                         cs = cs[arr]
                         data= data[:,arr,:]    
             
                         cs = relabel(cs)    # this makes cluster labels appear in cs[] in increasing order
                                 
             
-                        this_loss=0
+                        this_loss=0                        
                         dpmm.previous_n=0            
                         
                         for n in range(1,N):                
@@ -147,23 +149,21 @@ def main(args):
                             
                             this_loss -= logprobs[:,c].mean()
             
-            
+                                    
+                        this_loss.backward()    # this accumulates the gradients for each permutation
                         loss_values[perm] = this_loss.item()/N
                         loss += this_loss
-                        
                         
                     
                     perm_vars.append(loss_values.var())
                     losses.append(loss.item()/N)
                     accs.append(accuracies.mean())
-            
-            
+                    
+                    optimizer.step()      # the gradients used in this step are the sum of the gradients for each permutation 
                     optimizer.zero_grad()    
-                    loss.backward() 
-                    optimizer.step()
             
     
-                    print('{0:4d}  N:{1:2d}  K:{2}  Mean NLL:{3:.3f}   Mean Acc:{4:.3f}   Mean Variance: {5:.7f}  Mean Time/Iteration: {6:.1f}'\
+                    print('{0:4d}  N:{1:2d}  K:{2}  Mean NLL:{3:.3f}   Mean Acc:{4:.3f}   Mean Permutation Variance: {5:.7f}  Mean Time/Iteration: {6:.1f}'\
                           .format(it, N, K , np.mean(losses[-50:]), np.mean(accs[-50:]), np.mean(perm_vars[-50:]), (time.time()-t_start)/(it - itt)    ))    
     
                     break
