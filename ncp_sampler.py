@@ -30,7 +30,7 @@ class NCP_Sampler():
             data = data.view([self.N, 28,28])
         
         self.hs = model.h(data)            
-        self.qs = self.hs
+        self.qs = model.q(data)            
 
         
         self.f = model.f
@@ -91,7 +91,7 @@ class NCP_Sampler():
                 
                 logprobs = torch.zeros([S, maxK+1]).to(self.device)
                 rQ = self.Q.repeat(S,1)
-                rhn = self.hs[n,:].unsqueeze(0).repeat(S,1)
+
         
                     
                 for k in range(maxK+1):
@@ -110,7 +110,7 @@ class NCP_Sampler():
                             
                     Gk = gs.sum(dim=1)
                     
-                    uu = torch.cat((Gk,rQ,rhn), dim=1)
+                    uu = torch.cat((Gk,rQ), dim=1)
                     logprobs[:,k] = torch.squeeze(self.f(uu))    
                     
 

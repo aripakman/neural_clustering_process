@@ -90,8 +90,10 @@ class NeuralClustering(nn.Module):
 
         if self.params['model'] == 'Gauss2D':
             self.h = Mixture_Gaussian_encoder(params)         
+            self.q = Mixture_Gaussian_encoder(params)         
         elif self.params['model'] == 'MNIST':
             self.h = MNIST_encoder(params)         
+            self.q = MNIST_encoder(params)         
         else:
             raise NameError('Unknown model '+ self.params['model'])
     
@@ -111,7 +113,7 @@ class NeuralClustering(nn.Module):
                 )
         
         self.f = torch.nn.Sequential(
-                torch.nn.Linear(self.g_dim +2*self.h_dim, H),
+                torch.nn.Linear(self.g_dim +self.h_dim, H),
                 torch.nn.PReLU(),    
                 torch.nn.Linear(H, H),                
                 torch.nn.PReLU(),    
@@ -136,8 +138,7 @@ class NeuralClustering(nn.Module):
         assert(n == self.previous_n+1)
         self.previous_n = self.previous_n + 1 
 
-        K = len(set(cs[:n]))  #num of already _assigned_clusters
-        # K is the number of distinct classes in [0:n]          
+        K = len(set(cs[:n]))  # num of already created clusters
 
         if n==1:
             
@@ -159,10 +160,12 @@ class NeuralClustering(nn.Module):
                                 
             
             self.hs = self.h(data).view([self.batch_size,self.N, self.h_dim])            
-            self.Q = self.hs[:,2:,].sum(dim=1)     #[batch_size,h_dim]
-            
             self.Hs = torch.zeros([self.batch_size, 1, self.h_dim]).to(self.device)
             self.Hs[:,0,:] = self.hs[:,0,:]
+            
+            self.qs = self.q(data).view([self.batch_size,self.N, self.h_dim])            
+            self.Q = self.qs[:,2:,].sum(dim=1)     #[batch_size,h_dim]
+            
             
             
         else:            
@@ -177,7 +180,7 @@ class NeuralClustering(nn.Module):
                 self.previous_n = 0
                 
             else:
-                self.Q -= self.hs[:,n,]
+                self.Q -= self.qs[:,n,]
                 
             
         self.previous_K = K
@@ -196,7 +199,7 @@ class NeuralClustering(nn.Module):
             gs  = self.g(Hs2).view([self.batch_size, K, self.g_dim])
             Gk = gs.sum(dim=1)   #[batch_size,g_dim]
 
-            uu = torch.cat((Gk,self.Q,self.hs[:,n,:]), dim=1)  #prepare argument for the call to f()
+            uu = torch.cat((Gk,self.Q), dim=1)  #prepare argument for the call to f()
             logprobs[:,k] = torch.squeeze(self.f(uu))    
             
         
@@ -208,7 +211,7 @@ class NeuralClustering(nn.Module):
     
         Gk = gs.sum(dim=1)
     
-        uu = torch.cat((Gk,self.Q,self.hs[:,n,:]), dim=1)   #prepare argument for the call to f()
+        uu = torch.cat((Gk,self.Q), dim=1)   #prepare argument for the call to f()
         logprobs[:,K] = torch.squeeze(self.f(uu))    
 
 
