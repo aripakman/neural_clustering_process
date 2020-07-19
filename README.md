@@ -15,7 +15,7 @@ The code contains two implementations of the NCP algorithm, which differ in the 
 1. In ```ncp.py,``` used at train time, parallelization is over a minibatch of datasets, all with the same size and cluster structure.
 2. In ```ncp_sampler.py,``` used at test time, only one dataset is used, and samples with different cluster structures are generated in parallel. The use of ```ncp_sampler.py``` is illustrated in ```plot_functions.py```. 
 
-
+For an application of NCP to spike sorting, see [NCP-Sort](https://github.com/yueqiw/ncp-sort)
 
 
 <p align="center"> 
